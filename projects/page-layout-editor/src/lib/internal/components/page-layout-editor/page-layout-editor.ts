@@ -515,10 +515,7 @@ export class PageLayoutEditor implements OnDestroy {
 
   onPrintPreview(): void {
     if (!this.isFeatureEnabled('printPreview')) return;
-    const html = this.positionedBlocks
-      .map(({ block, layout }) => this.renderBlockHtml(block, layout))
-      .join('\n');
-    const css = `
+    const builtInCss = `
       .print-page {
         position: relative;
         width: ${this.page.widthPx}px;
@@ -558,6 +555,13 @@ export class PageLayoutEditor implements OnDestroy {
         margin-left: 4px;
       }
     `;
+    const renderedBlocks = this.positionedBlocks.map(({ block, layout }) => this.renderBlockHtml(block, layout));
+    const html = renderedBlocks.map((item) => item.html).join('\n');
+    const customCss = renderedBlocks
+      .map((item) => item.css ?? '')
+      .filter(Boolean)
+      .join('\n');
+    const css = `${builtInCss}\n${customCss}`;
     this.printAdapter.openPrintPreview(`<div class="print-page">${html}</div>`, css, this.pageSize);
     this.action.emit({ type: 'print-preview', blockId: this.selectedBlockId() });
   }
@@ -636,7 +640,7 @@ export class PageLayoutEditor implements OnDestroy {
     };
   }
 
-  private renderBlockHtml(block: ContentBlock, layout: LayoutBlock): string {
+  private renderBlockHtml(block: ContentBlock, layout: LayoutBlock): { html: string; css?: string } {
     const d = block.data;
     const style = [
       `left:${this.getLeftPx(layout)}px`,
@@ -645,17 +649,30 @@ export class PageLayoutEditor implements OnDestroy {
       `height:${this.getHeightPx(layout)}px`,
       `z-index:${layout.zIndex ?? 0}`,
     ].join(';');
+    const customRenderer = this.getCustomRenderer(block);
+    if (customRenderer?.printAdapter) {
+      const rendered = customRenderer.printAdapter({
+        block,
+        layout,
+        selected: this.isSelected(block.id),
+        readonly: this.isReadonly,
+      });
+      return {
+        html: `<div class="print-block" style="${style}">${rendered.html}</div>`,
+        css: rendered.css,
+      };
+    }
 
     switch (this.getRenderKind(block)) {
       case 'image':
-        return `<div class="print-block" style="${style};background:${this.escapeStyleColor(d['backgroundColor'], '#ffffff')}"><img src="${this.escapeAttr(
+        return { html: `<div class="print-block" style="${style};background:${this.escapeStyleColor(d['backgroundColor'], '#ffffff')}"><img src="${this.escapeAttr(
           d['src']
         )}" alt="${this.escapeAttr(d['alt'])}" style="object-fit:${this.escapeCssKeyword(
           d['objectFit'],
           'contain'
-        )};border-radius:${this.escapeNumber(d['borderRadius'], 4)}px" /></div>`;
+        )};border-radius:${this.escapeNumber(d['borderRadius'], 4)}px" /></div>` };
       case 'text':
-        return `<div class="print-block" style="${style};background:${this.escapeStyleColor(
+        return { html: `<div class="print-block" style="${style};background:${this.escapeStyleColor(
           d['backgroundColor'],
           '#ffffff'
         )};padding:16px;font-size:${this.escapeNumber(d['fontSize'], 14)}px;font-weight:${this.escapeCssKeyword(
@@ -663,7 +680,7 @@ export class PageLayoutEditor implements OnDestroy {
           'normal'
         )};text-align:${this.escapeCssKeyword(d['textAlign'], 'left')}"><p>${this.escapeHtml(
           d['content']
-        )}</p></div>`;
+        )}</p></div>` };
       case 'list-grid': {
         const questions = Array.isArray(d['questions']) ? d['questions'] : [];
         const showAnswers = d['showAnswers'] !== false;
@@ -677,12 +694,12 @@ export class PageLayoutEditor implements OnDestroy {
             }</div>`;
           })
           .join('');
-        return `<div class="print-block" style="${style};background:#e3f2fd;padding:16px"><div class="print-list-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div></div>`;
+        return { html: `<div class="print-block" style="${style};background:#e3f2fd;padding:16px"><div class="print-list-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div></div>` };
       }
       default:
-        return `<div class="print-block" style="${style};padding:16px"><pre>${this.escapeHtml(
+        return { html: `<div class="print-block" style="${style};padding:16px"><pre>${this.escapeHtml(
           JSON.stringify(d, null, 2)
-        )}</pre></div>`;
+        )}</pre></div>` };
     }
   }
 

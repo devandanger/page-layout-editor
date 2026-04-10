@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, beforeEach, afterEach, expect, it } from 'vitest';
 import { PageLayoutEditor } from './page-layout-editor';
-import { BlockRegistry, ContentBlock, LayoutBlock, PageDocument } from '../../models/content-block.model';
+import { BlockRegistry, BlockRendererContext, ContentBlock, LayoutBlock, PageDocument } from '../../models/content-block.model';
 import { IMAGE_SCHEMA, TEXT_SCHEMA } from '../../models/block-schemas';
 import { DefaultPrintAdapter } from '../../services/default-print-adapter';
 
@@ -94,6 +94,7 @@ function createDocument(): PageDocument {
 describe('PageLayoutEditor', () => {
   let document: PageDocument;
   let fixture: Awaited<ReturnType<typeof TestBed.createComponent<PageLayoutEditor>>>;
+  let printAdapterSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     vi.useFakeTimers();
@@ -105,7 +106,7 @@ describe('PageLayoutEditor', () => {
         {
           provide: DefaultPrintAdapter,
           useValue: {
-            openPrintPreview: vi.fn(),
+            openPrintPreview: (printAdapterSpy = vi.fn()),
           },
         },
       ],
@@ -263,6 +264,28 @@ describe('PageLayoutEditor', () => {
     fixture.componentInstance.onLayoutChange({ w: 5 });
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-width"]')?.textContent).toContain('5');
+  });
+
+  it('uses a custom renderer print adapter when one is registered', () => {
+    fixture.componentRef.setInput('renderers', {
+      text: {
+        component: TestCustomRendererComponent,
+        printAdapter: ({ block, selected, readonly }: BlockRendererContext) => ({
+          html: `<section data-print-kind="custom">${String(block.data['content'])}:${selected}:${readonly}</section>`,
+          css: '.custom-print-test { color: #123456; }',
+        }),
+      },
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.selectBlock('block-2');
+    fixture.componentInstance.onPrintPreview();
+
+    expect(printAdapterSpy).toHaveBeenCalledTimes(1);
+    const [html, css] = printAdapterSpy.mock.calls[0] as [string, string];
+    expect(html).toContain('data-print-kind="custom"');
+    expect(html).toContain('Hello world:true:false');
+    expect(css).toContain('.custom-print-test');
   });
 
   it('honors config readonly mode for document mutations', () => {

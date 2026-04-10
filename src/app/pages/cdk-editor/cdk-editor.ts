@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { BlockRendererRegistry, PageDocument, PageLayoutEditor } from 'page-layout-editor';
 import { ContentService } from '../../services/content.service';
-import { DEMO_BLOCK_REGISTRY } from '../../demo-block-registry';
+import { DEMO_BLOCK_REGISTRY, printDemoQuestionsRenderer } from '../../demo-block-registry';
 import { DemoQuestionsRendererComponent } from '../../demo-questions-renderer';
 
 @Component({
@@ -19,6 +19,7 @@ export class CdkEditor {
   renderers: BlockRendererRegistry = {
     'list-grid': {
       component: DemoQuestionsRendererComponent,
+      printAdapter: printDemoQuestionsRenderer,
     },
   };
 

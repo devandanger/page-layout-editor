@@ -1,5 +1,6 @@
 import {
   BlockRegistry,
+  BlockRendererContext,
   BlockSchema,
   createDefaultDocument,
   DEFAULT_BLOCK_REGISTRY,
@@ -53,6 +54,91 @@ const defaultQuestionsContent = {
   ],
 };
 
+export function printDemoQuestionsRenderer(context: BlockRendererContext): { html: string; css?: string } {
+  const data = context.block.data;
+  const questions = Array.isArray(data['questions']) ? data['questions'] : [];
+  const showAnswers = data['showAnswers'] !== false;
+  const columns = Math.max(1, Number(data['columns'] ?? 2));
+  const items = questions
+    .map((item, index) => {
+      const record = typeof item === 'object' && item ? (item as Record<string, unknown>) : {};
+      const question = String(record['question'] ?? '');
+      const answer = String(record['answer'] ?? '');
+      return `<article class="demo-print-question-card">
+        <div class="demo-print-question-row">
+          <span class="demo-print-question-num">${index + 1}.</span>
+          <span>${escapePrintText(question)}</span>
+        </div>
+        ${showAnswers && answer ? `<div class="demo-print-answer-row">Answer: ${escapePrintText(answer)}</div>` : ''}
+      </article>`;
+    })
+    .join('');
+
+  return {
+    html: `<section class="demo-print-questions">
+      <div class="demo-print-questions-header">
+        <span class="demo-print-title">Worksheet Questions</span>
+        <span class="demo-print-meta">${questions.length} prompts</span>
+      </div>
+      <div class="demo-print-questions-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div>
+    </section>`,
+    css: `
+      .demo-print-questions {
+        height: 100%;
+        padding: 16px;
+        background: linear-gradient(160deg, #fffde7 0%, #ffffff 55%, #eef7ff 100%);
+      }
+      .demo-print-questions-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .demo-print-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #234;
+      }
+      .demo-print-meta {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #607d8b;
+        font-weight: 700;
+      }
+      .demo-print-questions-grid {
+        display: grid;
+        gap: 10px;
+      }
+      .demo-print-question-card {
+        padding: 10px 12px;
+        border: 1px solid rgba(35, 52, 68, 0.1);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.92);
+      }
+      .demo-print-question-row {
+        display: flex;
+        gap: 6px;
+        font-size: 13px;
+        line-height: 1.45;
+        color: #1f2d3d;
+      }
+      .demo-print-question-num {
+        font-weight: 700;
+        color: #1565c0;
+      }
+      .demo-print-answer-row {
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px dashed rgba(21, 101, 192, 0.18);
+        font-size: 12px;
+        color: #2e7d32;
+        font-weight: 600;
+      }
+    `,
+  };
+}
+
 export const DEMO_BLOCK_REGISTRY: BlockRegistry = {
   ...DEFAULT_BLOCK_REGISTRY,
   questions: {
@@ -96,4 +182,13 @@ export function createDemoDocument(): PageDocument {
       },
     ],
   };
+}
+
+function escapePrintText(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }

@@ -55,4 +55,10 @@ Phase 1 renderer extensibility is now represented in the public types only:
 - `BlockRendererDefinition`
 - `BlockRendererRegistry`
 
-These types are exported so host apps can begin shaping custom renderer integrations before the editor accepts a runtime `renderers` input.
+The editor now accepts a runtime `renderers` input keyed by `renderKind`.
+Each renderer definition may provide:
+
+- `component`: the host Angular component used for on-page rendering
+- `printAdapter`: optional callback that returns printable HTML and optional CSS for print preview/export
+
+If no custom renderer is registered for a block's `renderKind`, the editor falls back to the built-in renderers.

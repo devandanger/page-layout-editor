@@ -122,6 +122,10 @@ export interface BlockRendererContext {
 
 export interface BlockRendererDefinition {
   component: Type<unknown>;
+  printAdapter?: (context: BlockRendererContext) => {
+    html: string;
+    css?: string;
+  };
 }
 
 export type BlockRendererRegistry = Record<string, BlockRendererDefinition>;
