@@ -1,64 +1,56 @@
-# PageLayoutEditor
+# page-layout-editor
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+Reusable Angular page layout editor with block-based content, grid layout controls, document JSON serialization, and a library-shaped API for host app integration.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Install
 
 ```bash
-ng generate component component-name
+npm install page-layout-editor
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Peer dependencies:
+
+- `@angular/cdk`
+- `@angular/common`
+- `@angular/core`
+- `@angular/forms`
+
+## Basic Usage
+
+Import the public API from the package root:
+
+```ts
+import {
+  PageLayoutEditor,
+  createEmptyDocument,
+  hydrateDocument,
+  serializeDocument,
+  type BlockRegistry,
+  type EditorTheme
+} from 'page-layout-editor';
+```
+
+The editor is designed to be hosted by an Angular application that provides:
+
+- a document JSON payload
+- a block registry for rendering block content
+- optional theme overrides
+
+## Document Model
+
+The editor persists a JSON document with separate `blocks`, `layout`, and `page` sections. The JSON document is the durable format. At runtime, the editor hydrates that structure into layout-aware editor state.
+
+See the repository documentation for the higher-level document and layout semantics:
+
+- `BLOCK_SCHEME_LAYOUT_BLOCK_DESIGN.md`
+- `projects/page-layout-editor/src/lib/README.md`
+
+## Development
+
+Build the library:
 
 ```bash
-ng generate --help
+npx ng build page-layout-editor
 ```
 
-## Building
-
-To build the library, run:
-
-```bash
-ng build page-layout-editor
-```
-
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
-
-### Publishing the Library
-
-Once the project is built, you can publish your library by following these steps:
-
-1. Navigate to the `dist` directory:
-
-   ```bash
-   cd dist/page-layout-editor
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The published package is generated into `dist/page-layout-editor`.
