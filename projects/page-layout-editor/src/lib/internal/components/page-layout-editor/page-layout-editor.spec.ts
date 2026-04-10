@@ -194,7 +194,7 @@ describe('PageLayoutEditor', () => {
         type: 'note',
         label: 'Note',
         schema: TEXT_SCHEMA,
-        renderKind: 'json',
+        renderKind: 'note-card',
         createDefaultContent: () => ({ content: 'Custom note body' }),
         createDefaultLayout: () => ({ w: 5, h: 3 }),
       },
@@ -202,7 +202,7 @@ describe('PageLayoutEditor', () => {
 
     fixture.componentRef.setInput('registry', customRegistry);
     fixture.componentRef.setInput('renderers', {
-      json: { component: TestCustomRendererComponent },
+      'note-card': { component: TestCustomRendererComponent },
     });
     fixture.detectChanges();
 

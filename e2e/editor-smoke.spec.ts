@@ -21,6 +21,7 @@ test.describe('editor smoke', () => {
     await gotoEditor(page);
 
     await expect(page.getByTestId('demo-questions-renderer')).toBeVisible();
+    await expect(page.getByTestId('demo-callout-renderer')).toBeVisible();
     await block(page, 'demo-questions-block').click();
     await expect(page.getByTestId('custom-renderer-selected-state')).toContainText('selected');
   });
@@ -48,14 +49,14 @@ test.describe('editor smoke', () => {
   test('undo and redo visibly restore editor state', async ({ page }) => {
     await gotoEditor(page);
 
-    await expect(page.locator('[data-block-id]')).toHaveCount(3);
-    await page.getByRole('button', { name: /add image/i }).click();
     await expect(page.locator('[data-block-id]')).toHaveCount(4);
+    await page.getByRole('button', { name: /add image/i }).click();
+    await expect(page.locator('[data-block-id]')).toHaveCount(5);
 
     await page.getByTestId('undo-fab').click();
-    await expect(page.locator('[data-block-id]')).toHaveCount(3);
+    await expect(page.locator('[data-block-id]')).toHaveCount(4);
 
     await page.getByTestId('redo-fab').click();
-    await expect(page.locator('[data-block-id]')).toHaveCount(4);
+    await expect(page.locator('[data-block-id]')).toHaveCount(5);
   });
 });

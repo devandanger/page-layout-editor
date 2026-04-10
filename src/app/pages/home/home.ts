@@ -60,12 +60,12 @@ export class Home {
     'routing and application shell',
     'loading, saving, autosave, and backend integration',
     'auth, permissions, and product-specific validation',
-    'supplying the document, registry, custom block definitions, and optional theming inputs',
+    'supplying the document, registry, custom block definitions, custom renderers, and optional theming inputs',
   ];
   apiInputs: ApiInput[] = [
     { name: 'document', type: 'PageDocument', description: 'Current editor document passed in by the consuming app.' },
     { name: 'registry', type: 'BlockRegistry', description: 'Available block definitions, schemas, defaults, and render behavior.' },
-    { name: 'renderers', type: 'BlockRendererRegistry | undefined', description: 'Optional host-provided Angular renderer components keyed by renderKind.' },
+    { name: 'renderers', type: 'BlockRendererRegistry | undefined', description: 'Optional host-provided runtime and print renderers keyed by renderKind.' },
     { name: 'theme', type: 'EditorTheme | undefined', description: 'Optional visual tokens for chrome, accent colors, and sizing.' },
     { name: 'config', type: 'PageLayoutEditorConfig | undefined', description: 'Optional feature flags, readonly mode, and history settings.' },
   ];
@@ -142,6 +142,13 @@ export class Home {
   },
 };`;
   rendererExample = `const worksheetRenderers: BlockRendererRegistry = {
+  'callout-card': {
+    component: WorksheetCalloutRendererComponent,
+    printAdapter: ({ block }) => ({
+      html: \`<section class="worksheet-callout-print">\${String(block.data['title'] ?? '')}</section>\`,
+      css: '.worksheet-callout-print { padding: 16px; }',
+    }),
+  },
   'list-grid': {
     component: WorksheetQuestionsRendererComponent,
   },

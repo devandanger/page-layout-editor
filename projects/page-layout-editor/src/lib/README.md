@@ -49,16 +49,62 @@ const worksheetBlockRegistry: BlockRegistry = {
 
 If `renderKind` is omitted, the editor falls back to the block type name for built-in block types, then to the JSON renderer for unknown render kinds.
 
-Phase 1 renderer extensibility is now represented in the public types only:
-
 - `BlockRendererContext`
 - `BlockRendererDefinition`
 - `BlockRendererRegistry`
 
-The editor now accepts a runtime `renderers` input keyed by `renderKind`.
+The editor accepts a runtime `renderers` input keyed by `renderKind`.
 Each renderer definition may provide:
 
 - `component`: the host Angular component used for on-page rendering
 - `printAdapter`: optional callback that returns printable HTML and optional CSS for print preview/export
 
 If no custom renderer is registered for a block's `renderKind`, the editor falls back to the built-in renderers.
+
+Example:
+
+```ts
+const worksheetBlockRegistry: BlockRegistry = {
+  questions: {
+    type: 'questions',
+    label: 'Questions',
+    schema: QUESTIONS_SCHEMA,
+    renderKind: 'list-grid',
+    createDefaultContent: () => ({ columns: 2, showAnswers: true, questions: [] }),
+    createDefaultLayout: () => ({ w: 12, h: 8 }),
+  },
+  callout: {
+    type: 'callout',
+    label: 'Callout',
+    schema: CALLOUT_SCHEMA,
+    renderKind: 'callout-card',
+    createDefaultContent: () => ({
+      eyebrow: 'Teacher Note',
+      title: 'Try A Different Strategy',
+      body: 'Use a number line before solving the next three prompts.',
+      accentColor: '#c62828',
+      backgroundColor: '#fff8f2',
+    }),
+    createDefaultLayout: () => ({ w: 12, h: 4 }),
+  },
+};
+
+const worksheetRenderers: BlockRendererRegistry = {
+  'callout-card': {
+    component: WorksheetCalloutRendererComponent,
+    printAdapter: ({ block }) => ({
+      html: `<section class="worksheet-callout-print">${String(block.data['title'] ?? '')}</section>`,
+      css: '.worksheet-callout-print { padding: 16px; }',
+    }),
+  },
+  'list-grid': {
+    component: WorksheetQuestionsRendererComponent,
+  },
+};
+```
+
+The design boundary is:
+
+- `BlockSchema`: editable content fields shown in the property panel
+- `BlockRegistry`: block identity, defaults, layout defaults, and `renderKind`
+- `BlockRendererRegistry`: host-provided runtime and print rendering keyed by `renderKind`

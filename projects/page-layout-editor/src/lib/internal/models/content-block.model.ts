@@ -99,7 +99,9 @@ export interface DocumentValidationResult {
   errors: string[];
 }
 
-export type BlockRenderKind = 'image' | 'text' | 'list-grid' | 'json';
+export type BuiltInBlockRenderKind = 'image' | 'text' | 'list-grid' | 'json';
+
+export type BlockRenderKind = BuiltInBlockRenderKind | (string & {});
 
 export interface BlockDefinition {
   type: string;
