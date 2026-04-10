@@ -80,6 +80,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "port": 9100
+          },
           "configurations": {
             "production": {
               "buildTarget": "page-layout-proto:build:production"

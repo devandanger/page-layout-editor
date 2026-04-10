@@ -629,7 +629,7 @@ export class PageLayoutEditor implements OnDestroy {
 
     switch (this.getRenderKind(block)) {
       case 'image':
-        return `<div class="print-block" style="${style};background:${this.escapeStyleColor(d['backgroundColor'], '#e8f5e9')}"><img src="${this.escapeAttr(
+        return `<div class="print-block" style="${style};background:${this.escapeStyleColor(d['backgroundColor'], '#ffffff')}"><img src="${this.escapeAttr(
           d['src']
         )}" alt="${this.escapeAttr(d['alt'])}" style="object-fit:${this.escapeCssKeyword(
           d['objectFit'],

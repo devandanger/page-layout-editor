@@ -35,6 +35,7 @@ export const IMAGE_SCHEMA: BlockSchema = {
       { label: 'None', value: 'none' },
     ]},
     { key: 'borderRadius', label: 'Border Radius (px)', type: 'number', min: 0, max: 100 },
+    { key: 'backgroundColor', label: 'Background Color', type: 'color' },
   ],
 };
 
@@ -71,7 +72,7 @@ export function createDefaultImageBlock(): ContentBlock {
       alt: 'Sample math worksheet header image',
       objectFit: 'contain',
       borderRadius: 4,
-      backgroundColor: '#e8f5e9',
+      backgroundColor: '#ffffff',
     },
   };
 }

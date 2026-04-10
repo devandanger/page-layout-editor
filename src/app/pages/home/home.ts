@@ -136,7 +136,7 @@ export class Home {
       alt: '',
       objectFit: 'cover',
       borderRadius: 8,
-      backgroundColor: '#e8f5e9',
+      backgroundColor: '#ffffff',
     }),
     createDefaultLayout: () => ({ w: 12, h: 6 }),
   },

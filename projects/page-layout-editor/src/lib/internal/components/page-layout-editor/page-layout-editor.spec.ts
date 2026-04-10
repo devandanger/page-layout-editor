@@ -16,7 +16,7 @@ function createDocument(): PageDocument {
         alt: 'Image',
         objectFit: 'contain',
         borderRadius: 4,
-        backgroundColor: '#e8f5e9',
+        backgroundColor: '#ffffff',
       },
     },
     {
