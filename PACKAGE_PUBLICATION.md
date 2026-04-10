@@ -9,7 +9,7 @@ projects/page-layout-editor/
 The demo host app under `src/app` now consumes that library through the workspace package import:
 
 ```ts
-import { PageLayoutEditor, hydrateDocument, serializeDocument } from 'page-layout-editor';
+import { PageLayoutEditor, hydrateDocument, serializeDocument } from '@devandanger/page-layout-editor';
 ```
 
 ## Current Library Shape
@@ -65,16 +65,33 @@ npm run test:e2e
    - a private npm package
    - a workspace package only
    - a git dependency
-2. Expand peer dependencies for package consumers if needed.
-   - `@angular/cdk`
-   - `@angular/forms`
-   - `@angular/router` only if the public surface ever depends on it
-3. Decide whether the package should keep a single entrypoint or add sub-entrypoints later.
-4. Consider whether custom renderer components are needed beyond the current `renderKind` support.
-5. Add release/versioning workflow if the package will be published outside the repo.
+2. Decide whether the package should keep a single entrypoint or add sub-entrypoints later.
+3. Consider whether custom renderer components are needed beyond the current `renderKind` support.
+4. Add release/versioning workflow if the package will be published outside the repo.
 
 ## Known Limitations
 
 - Styling is component-scoped and may need more theme tokens for broader host customization.
 - `renderKind` supports reuse of built-in renderers, but not arbitrary custom Angular renderer components yet.
-- The demo host app currently uses a source-path alias for local workspace consumption. A published package will consume the built package output instead.
+- The demo host app currently uses a source-path alias for local workspace consumption. Published consumers will resolve the package from GitHub Packages instead.
+
+## GitHub Packages Consumption
+
+The library package is configured as:
+
+```text
+@devandanger/page-layout-editor
+```
+
+To consume it from another app, that app will need an `.npmrc` similar to:
+
+```text
+@devandanger:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+```
+
+Then install it with:
+
+```bash
+npm install @devandanger/page-layout-editor
+```

@@ -5,7 +5,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/app",
     "paths": {
-      "page-layout-editor": ["./projects/page-layout-editor/src/public-api.ts"]
+      "@devandanger/page-layout-editor": ["./projects/page-layout-editor/src/public-api.ts"]
     },
     "types": []
   },

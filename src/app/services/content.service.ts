@@ -7,7 +7,7 @@ import {
   PageDocument,
   PageSettings,
   PageSize,
-} from 'page-layout-editor';
+} from '@devandanger/page-layout-editor';
 
 @Injectable({ providedIn: 'root' })
 export class ContentService {
