@@ -17,6 +17,14 @@ async function setLayoutInput(page: Page, key: 'x' | 'y' | 'w' | 'h', value: num
 }
 
 test.describe('editor smoke', () => {
+  test('host-provided custom renderer is visible and selectable', async ({ page }) => {
+    await gotoEditor(page);
+
+    await expect(page.getByTestId('demo-questions-renderer')).toBeVisible();
+    await block(page, 'demo-questions-block').click();
+    await expect(page.getByTestId('custom-renderer-selected-state')).toContainText('selected');
+  });
+
   test('moving a block into a collision through layout controls shows collision feedback', async ({ page }) => {
     await gotoEditor(page);
 

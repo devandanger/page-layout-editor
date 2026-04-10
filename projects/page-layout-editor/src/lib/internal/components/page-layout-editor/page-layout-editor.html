@@ -126,53 +126,61 @@
                 aria-label="Resize block"
               ></button>
             }
-            @switch (getRenderKind(item.block)) {
-              @case ('image') {
-                <div
-                  class="content image-content"
-                  [style.background]="item.block.data['backgroundColor'] || '#ffffff'"
-                >
-                  <img
-                    [src]="item.block.data['src']"
-                    [alt]="item.block.data['alt']"
-                    [style.object-fit]="item.block.data['objectFit'] || 'contain'"
-                    [style.border-radius.px]="item.block.data['borderRadius'] || 4"
-                  />
-                </div>
-              }
-              @case ('text') {
-                <div
-                  class="content text-content"
-                  [style.background]="item.block.data['backgroundColor']"
-                  [style.font-size.px]="item.block.data['fontSize']"
-                  [style.font-weight]="item.block.data['fontWeight']"
-                  [style.text-align]="item.block.data['textAlign']"
-                >
-                  <p>{{ item.block.data['content'] }}</p>
-                </div>
-              }
-              @case ('list-grid') {
-                <div class="content list-grid-content">
+            @if (getCustomRenderer(item.block); as customRenderer) {
+              <div class="content custom-renderer-content">
+                <ng-container
+                  *ngComponentOutlet="customRenderer.component; inputs: getRendererContext(item.block, item.layout)"
+                ></ng-container>
+              </div>
+            } @else {
+              @switch (getRenderKind(item.block)) {
+                @case ('image') {
                   <div
-                    class="list-grid"
-                    [style.grid-template-columns]="'repeat(' + (item.block.data['columns'] || 2) + ', 1fr)'"
+                    class="content image-content"
+                    [style.background]="item.block.data['backgroundColor'] || '#ffffff'"
                   >
-                    @for (q of getQuestions(item.block); track $index) {
-                      <div class="q-row">
-                        <span class="q-num">{{ $index + 1 }}.</span>
-                        <span>{{ q['question'] }}</span>
-                        @if (item.block.data['showAnswers'] !== false) {
-                          <span class="q-answer">= {{ q['answer'] }}</span>
-                        }
-                      </div>
-                    }
+                    <img
+                      [src]="item.block.data['src']"
+                      [alt]="item.block.data['alt']"
+                      [style.object-fit]="item.block.data['objectFit'] || 'contain'"
+                      [style.border-radius.px]="item.block.data['borderRadius'] || 4"
+                    />
                   </div>
-                </div>
-              }
-              @default {
-                <div class="content">
-                  <pre>{{ item.block.data | json }}</pre>
-                </div>
+                }
+                @case ('text') {
+                  <div
+                    class="content text-content"
+                    [style.background]="item.block.data['backgroundColor']"
+                    [style.font-size.px]="item.block.data['fontSize']"
+                    [style.font-weight]="item.block.data['fontWeight']"
+                    [style.text-align]="item.block.data['textAlign']"
+                  >
+                    <p>{{ item.block.data['content'] }}</p>
+                  </div>
+                }
+                @case ('list-grid') {
+                  <div class="content list-grid-content">
+                    <div
+                      class="list-grid"
+                      [style.grid-template-columns]="'repeat(' + (item.block.data['columns'] || 2) + ', 1fr)'"
+                    >
+                      @for (q of getQuestions(item.block); track $index) {
+                        <div class="q-row">
+                          <span class="q-num">{{ $index + 1 }}.</span>
+                          <span>{{ q['question'] }}</span>
+                          @if (item.block.data['showAnswers'] !== false) {
+                            <span class="q-answer">= {{ q['answer'] }}</span>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+                @default {
+                  <div class="content">
+                    <pre>{{ item.block.data | json }}</pre>
+                  </div>
+                }
               }
             }
           </div>

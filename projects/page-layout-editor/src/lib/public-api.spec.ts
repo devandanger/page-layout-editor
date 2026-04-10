@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import {
+  BlockRendererContext,
+  BlockRendererDefinition,
+  BlockRendererRegistry,
   DEFAULT_BLOCK_REGISTRY,
   EditorAction,
   EditorTheme,
@@ -32,6 +35,36 @@ describe('page-layout-editor public API', () => {
       data: { content: 'Public API' },
     });
     expect(serialized.layout[0]).toMatchObject({ blockId: 'block-1', w: 12, h: 4 });
+  });
+
+  it('exports the renderer contract types for future host-provided renderers', () => {
+    const context: BlockRendererContext = {
+      block: {
+        id: 'block-1',
+        blockType: 'text',
+        schema: DEFAULT_BLOCK_REGISTRY['text'].schema,
+        data: { content: 'Renderer contract' },
+      },
+      layout: {
+        id: 'layout-1',
+        blockId: 'block-1',
+        x: 0,
+        y: 0,
+        w: 12,
+        h: 4,
+      },
+      selected: true,
+      readonly: false,
+    };
+    const definition: BlockRendererDefinition = {
+      component: PageLayoutEditor,
+    };
+    const registry: BlockRendererRegistry = {
+      text: definition,
+    };
+
+    expect(context.block.id).toBe('block-1');
+    expect(registry['text'].component).toBe(PageLayoutEditor);
   });
 
   it('allows a host app to instantiate the editor through the public entrypoint', async () => {

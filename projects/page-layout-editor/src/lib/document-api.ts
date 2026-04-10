@@ -10,6 +10,9 @@ export {
 
 export type {
   BlockDefinition,
+  BlockRendererContext,
+  BlockRendererDefinition,
+  BlockRendererRegistry,
   BlockRegistry,
   BlockRenderKind,
   BlockSchema,

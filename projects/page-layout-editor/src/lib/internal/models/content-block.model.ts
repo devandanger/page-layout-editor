@@ -1,3 +1,5 @@
+import type { Type } from '@angular/core';
+
 // --- Property Schema ---
 // Each block type declares its editable properties via a schema.
 // The property panel renders controls dynamically from this.
@@ -110,6 +112,19 @@ export interface BlockDefinition {
 }
 
 export type BlockRegistry = Record<string, BlockDefinition>;
+
+export interface BlockRendererContext {
+  block: ContentBlock;
+  layout: LayoutBlock;
+  selected: boolean;
+  readonly: boolean;
+}
+
+export interface BlockRendererDefinition {
+  component: Type<unknown>;
+}
+
+export type BlockRendererRegistry = Record<string, BlockRendererDefinition>;
 
 export interface EditorTheme {
   accentColor?: string;

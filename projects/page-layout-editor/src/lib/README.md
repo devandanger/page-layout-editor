@@ -48,3 +48,11 @@ const worksheetBlockRegistry: BlockRegistry = {
 ```
 
 If `renderKind` is omitted, the editor falls back to the block type name for built-in block types, then to the JSON renderer for unknown render kinds.
+
+Phase 1 renderer extensibility is now represented in the public types only:
+
+- `BlockRendererContext`
+- `BlockRendererDefinition`
+- `BlockRendererRegistry`
+
+These types are exported so host apps can begin shaping custom renderer integrations before the editor accepts a runtime `renderers` input.

@@ -4,6 +4,9 @@ import { CdkDrag, CdkDragEnd, CdkDragHandle, CdkDragMove } from '@angular/cdk/dr
 import { DefaultPrintAdapter } from '../../services/default-print-adapter';
 import {
   BlockRegistry,
+  BlockRendererContext,
+  BlockRendererDefinition,
+  BlockRendererRegistry,
   BlockRenderKind,
   ContentBlock,
   EditorAction,
@@ -59,6 +62,7 @@ export class PageLayoutEditor implements OnDestroy {
 
   documentInput = input<PageDocument | null>(null, { alias: 'document' });
   registry = input<BlockRegistry>(DEFAULT_BLOCK_REGISTRY);
+  renderers = input<BlockRendererRegistry | null>(null);
   theme = input<EditorTheme | null>(null);
   config = input<PageLayoutEditorConfig | null>(null);
   /** Prefer config.readonly for new consumers. Kept as a compatibility input. */
@@ -582,6 +586,21 @@ export class PageLayoutEditor implements OnDestroy {
     return Array.isArray(block.data['questions'])
       ? (block.data['questions'] as Array<Record<string, unknown>>)
       : [];
+  }
+
+  getCustomRenderer(block: ContentBlock): BlockRendererDefinition | null {
+    const renderKind = this.getRenderKind(block);
+    return this.renderers()?.[renderKind] ?? null;
+  }
+
+  getRendererContext(block: ContentBlock, layout: LayoutBlock): Record<string, unknown> {
+    const context: BlockRendererContext = {
+      block,
+      layout,
+      selected: this.isSelected(block.id),
+      readonly: this.isReadonly,
+    };
+    return context as unknown as Record<string, unknown>;
   }
 
   getRenderKind(block: ContentBlock): BlockRenderKind {

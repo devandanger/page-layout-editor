@@ -1,9 +1,29 @@
+import { Component, Input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, beforeEach, afterEach, expect, it } from 'vitest';
 import { PageLayoutEditor } from './page-layout-editor';
 import { BlockRegistry, ContentBlock, LayoutBlock, PageDocument } from '../../models/content-block.model';
 import { IMAGE_SCHEMA, TEXT_SCHEMA } from '../../models/block-schemas';
 import { DefaultPrintAdapter } from '../../services/default-print-adapter';
+
+@Component({
+  selector: 'app-test-custom-renderer',
+  standalone: true,
+  template: `
+    <section data-testid="custom-renderer">
+      <span data-testid="custom-renderer-type">{{ block.blockType }}</span>
+      <span data-testid="custom-renderer-selected">{{ selected }}</span>
+      <span data-testid="custom-renderer-readonly">{{ readonly }}</span>
+      <span data-testid="custom-renderer-width">{{ layout.w }}</span>
+    </section>
+  `,
+})
+class TestCustomRendererComponent {
+  @Input() block!: ContentBlock;
+  @Input() layout!: LayoutBlock;
+  @Input() selected = false;
+  @Input() readonly = false;
+}
 
 function createDocument(): PageDocument {
   const blocks: ContentBlock[] = [
@@ -165,6 +185,84 @@ describe('PageLayoutEditor', () => {
     expect(fixture.componentInstance.selectedBlock()?.blockType).toBe('note');
     expect(fixture.componentInstance.selectedLayout()).toMatchObject({ w: 5, h: 3 });
     expect(fixture.componentInstance.getRenderKind(fixture.componentInstance.selectedBlock()!)).toBe('text');
+  });
+
+  it('renders a host-provided custom renderer when one is registered for the render kind', () => {
+    const customRegistry: BlockRegistry = {
+      note: {
+        type: 'note',
+        label: 'Note',
+        schema: TEXT_SCHEMA,
+        renderKind: 'json',
+        createDefaultContent: () => ({ content: 'Custom note body' }),
+        createDefaultLayout: () => ({ w: 5, h: 3 }),
+      },
+    };
+
+    fixture.componentRef.setInput('registry', customRegistry);
+    fixture.componentRef.setInput('renderers', {
+      json: { component: TestCustomRendererComponent },
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.addBlock('note');
+    fixture.detectChanges();
+
+    const renderer = fixture.nativeElement.querySelector('[data-testid="custom-renderer"]');
+    expect(renderer).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-type"]')?.textContent).toContain('note');
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-selected"]')?.textContent).toContain('true');
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-readonly"]')?.textContent).toContain('false');
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-width"]')?.textContent).toContain('5');
+  });
+
+  it('falls back to the built-in renderer when no custom renderer is registered for the render kind', () => {
+    const customRegistry: BlockRegistry = {
+      note: {
+        type: 'note',
+        label: 'Note',
+        schema: TEXT_SCHEMA,
+        renderKind: 'text',
+        createDefaultContent: () => ({ content: 'Built-in fallback note' }),
+        createDefaultLayout: () => ({ w: 5, h: 3 }),
+      },
+    };
+
+    fixture.componentRef.setInput('registry', customRegistry);
+    fixture.componentRef.setInput('renderers', {
+      json: { component: TestCustomRendererComponent },
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.addBlock('note');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer"]')).toBeNull();
+    const renderedText = Array.from(
+      fixture.nativeElement.querySelectorAll('.text-content p') as NodeListOf<HTMLParagraphElement>
+    ).map((element) => element.textContent ?? '');
+    expect(renderedText.some((text) => text.includes('Built-in fallback note'))).toBe(true);
+  });
+
+  it('updates custom renderer context when selection, readonly, and layout change', () => {
+    fixture.componentRef.setInput('renderers', {
+      text: { component: TestCustomRendererComponent },
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.selectBlock('block-2');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-selected"]')?.textContent).toContain('true');
+
+    fixture.componentRef.setInput('config', { readonly: true });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-readonly"]')?.textContent).toContain('true');
+
+    fixture.componentRef.setInput('config', null);
+    fixture.detectChanges();
+    fixture.componentInstance.onLayoutChange({ w: 5 });
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[data-testid="custom-renderer-width"]')?.textContent).toContain('5');
   });
 
   it('honors config readonly mode for document mutations', () => {

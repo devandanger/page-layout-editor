@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { BlockRendererRegistry, PageDocument, PageLayoutEditor } from 'page-layout-editor';
 import { ContentService } from '../../services/content.service';
-import { PageDocument, PageLayoutEditor } from 'page-layout-editor';
 import { DEMO_BLOCK_REGISTRY } from '../../demo-block-registry';
+import { DemoQuestionsRendererComponent } from '../../demo-questions-renderer';
 
 @Component({
   selector: 'app-cdk-editor',
@@ -15,6 +16,11 @@ export class CdkEditor {
 
   document = this.contentService.data;
   registry = DEMO_BLOCK_REGISTRY;
+  renderers: BlockRendererRegistry = {
+    'list-grid': {
+      component: DemoQuestionsRendererComponent,
+    },
+  };
 
   onDocumentChange(document: PageDocument): void {
     this.contentService.update(document);

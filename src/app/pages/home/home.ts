@@ -65,6 +65,7 @@ export class Home {
   apiInputs: ApiInput[] = [
     { name: 'document', type: 'PageDocument', description: 'Current editor document passed in by the consuming app.' },
     { name: 'registry', type: 'BlockRegistry', description: 'Available block definitions, schemas, defaults, and render behavior.' },
+    { name: 'renderers', type: 'BlockRendererRegistry | undefined', description: 'Optional host-provided Angular renderer components keyed by renderKind.' },
     { name: 'theme', type: 'EditorTheme | undefined', description: 'Optional visual tokens for chrome, accent colors, and sizing.' },
     { name: 'config', type: 'PageLayoutEditorConfig | undefined', description: 'Optional feature flags, readonly mode, and history settings.' },
   ];
@@ -76,6 +77,7 @@ export class Home {
   consumerExample = `<app-page-layout-editor
   [document]="worksheetDocument"
   [registry]="worksheetBlockRegistry"
+  [renderers]="worksheetRenderers"
   [theme]="worksheetEditorTheme"
   [config]="worksheetEditorConfig"
   (documentChange)="onDocumentChange($event)"
@@ -126,19 +128,22 @@ export class Home {
   }
 };`;
   renderKindExample = `const worksheetBlockRegistry: BlockRegistry = {
-  heroImage: {
-    type: 'heroImage',
-    label: 'Hero Image',
-    schema: HERO_IMAGE_SCHEMA,
-    renderKind: 'image',
+  questions: {
+    type: 'questions',
+    label: 'Questions',
+    schema: QUESTIONS_SCHEMA,
+    renderKind: 'list-grid',
     createDefaultContent: () => ({
-      src: '',
-      alt: '',
-      objectFit: 'cover',
-      borderRadius: 8,
-      backgroundColor: '#ffffff',
+      columns: 2,
+      showAnswers: true,
+      questions: [],
     }),
-    createDefaultLayout: () => ({ w: 12, h: 6 }),
+    createDefaultLayout: () => ({ w: 12, h: 8 }),
+  },
+};`;
+  rendererExample = `const worksheetRenderers: BlockRendererRegistry = {
+  'list-grid': {
+    component: WorksheetQuestionsRendererComponent,
   },
 };`;
   themeExample = `const worksheetEditorTheme: EditorTheme = {
