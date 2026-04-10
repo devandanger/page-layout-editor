@@ -1,0 +1,166 @@
+.menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 1rem;
+  height: 40px;
+  color: #fff;
+  position: relative;
+  z-index: 100;
+  user-select: none;
+}
+
+// Menu triggers
+.menus {
+  display: flex;
+  gap: 0;
+  height: 100%;
+}
+
+.menu-item {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menu-trigger {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0 0.6rem;
+  height: 100%;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.1s;
+
+  &:hover,
+  .menu-item.open & {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+}
+
+// Dropdowns
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  padding: 0.3rem 0;
+  z-index: 200;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  color: #333;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  &:disabled:hover {
+    background: none;
+  }
+
+  .shortcut-icon {
+    width: 1.2rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+  }
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 0.3rem 0;
+}
+
+// Title
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+// Size badge
+.size-badge {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+// Hint
+.hint {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.top-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.fab-action {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.38;
+    cursor: default;
+    transform: none;
+  }
+
+  &:disabled:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+}
+
+// Backdrop to close menus
+.menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}

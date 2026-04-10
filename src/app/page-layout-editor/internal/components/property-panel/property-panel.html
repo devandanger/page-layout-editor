@@ -1,0 +1,257 @@
+@if (block(); as b) {
+  <div class="panel">
+    <div class="panel-header">
+      <h3>
+        @if (b.schema.icon) {
+          <span class="header-icon">{{ b.schema.icon }}</span>
+        }
+        {{ b.schema.typeLabel }} Properties
+      </h3>
+      <button class="close-btn" (click)="closed.emit()" title="Close panel">&times;</button>
+    </div>
+
+    <div class="panel-body">
+      <section class="panel-section">
+        <div class="section-title">Content</div>
+        @for (prop of b.schema.properties; track prop.key) {
+          @switch (prop.type) {
+            @case ('text') {
+              <div class="field">
+                <label>{{ prop.label }}</label>
+                <input
+                  type="text"
+                  [ngModel]="b.data[prop.key]"
+                  (ngModelChange)="onPropChange(prop.key, $event)"
+                  [placeholder]="prop.placeholder ?? ''"
+                />
+              </div>
+            }
+            @case ('textarea') {
+              <div class="field">
+                <label>{{ prop.label }}</label>
+                <textarea
+                  rows="6"
+                  [ngModel]="b.data[prop.key]"
+                  (ngModelChange)="onPropChange(prop.key, $event)"
+                  [placeholder]="prop.placeholder ?? ''"
+                ></textarea>
+                <div class="char-count">{{ getTextLength(b.data[prop.key]) }} characters</div>
+              </div>
+            }
+            @case ('url') {
+              <div class="field">
+                <label>{{ prop.label }}</label>
+                <input
+                  type="url"
+                  [ngModel]="b.data[prop.key]"
+                  (ngModelChange)="onPropChange(prop.key, $event)"
+                  [placeholder]="prop.placeholder ?? 'https://...'"
+                />
+              </div>
+              @if (isImageUrl(b.data[prop.key])) {
+                <div class="preview">
+                  <label>Preview</label>
+                  <img [src]="b.data[prop.key]" alt="Preview" />
+                </div>
+              }
+            }
+            @case ('number') {
+              <div class="field">
+                <label>{{ prop.label }}</label>
+                <input
+                  type="number"
+                  [ngModel]="b.data[prop.key]"
+                  (ngModelChange)="onPropChange(prop.key, +$event)"
+                  [min]="prop.min ?? 0"
+                  [max]="prop.max ?? 9999"
+                />
+              </div>
+            }
+            @case ('select') {
+              <div class="field">
+                <label>{{ prop.label }}</label>
+                <select
+                  [ngModel]="b.data[prop.key]"
+                  (ngModelChange)="onPropChange(prop.key, $event)"
+                >
+                  @for (opt of prop.options; track opt.value) {
+                    <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+            }
+            @case ('color') {
+              <div class="field field-color">
+                <label>{{ prop.label }}</label>
+                <div class="color-row">
+                  <input
+                    type="color"
+                    [ngModel]="b.data[prop.key]"
+                    (ngModelChange)="onPropChange(prop.key, $event)"
+                    class="color-picker"
+                  />
+                  <input
+                    type="text"
+                    [ngModel]="b.data[prop.key]"
+                    (ngModelChange)="onPropChange(prop.key, $event)"
+                    class="color-text"
+                    maxlength="9"
+                  />
+                </div>
+              </div>
+            }
+            @case ('boolean') {
+              <div class="field field-boolean">
+                <label class="toggle-label">
+                  <input
+                    type="checkbox"
+                    [ngModel]="b.data[prop.key]"
+                    (ngModelChange)="onPropChange(prop.key, $event)"
+                  />
+                  <span>{{ prop.label }}</span>
+                </label>
+              </div>
+            }
+            @case ('array') {
+              <div class="array-section">
+                <div class="array-header">
+                  <span>{{ prop.label }} ({{ getArrayItems(prop.key).length }})</span>
+                  <button class="btn-add" (click)="addArrayItem(prop.key, prop)">+ Add</button>
+                </div>
+                <div class="array-items">
+                  @for (item of getArrayItems(prop.key); track $index) {
+                    <div class="array-card">
+                      <div class="array-card-header">
+                        <span class="item-index">#{{ $index + 1 }}</span>
+                        <button
+                          class="btn-remove"
+                          (click)="removeArrayItem(prop.key, $index)"
+                          title="Remove"
+                        >&times;</button>
+                      </div>
+                      @for (subProp of prop.itemSchema; track subProp.key) {
+                        @switch (subProp.type) {
+                          @case ('text') {
+                            <div class="field">
+                              <label>{{ subProp.label }}</label>
+                              <input
+                                type="text"
+                                [ngModel]="item[subProp.key]"
+                                (ngModelChange)="onArrayItemChange(prop.key, $index, subProp.key, $event)"
+                                [placeholder]="subProp.placeholder ?? ''"
+                              />
+                            </div>
+                          }
+                          @case ('select') {
+                            <div class="field">
+                              <label>{{ subProp.label }}</label>
+                              <select
+                                [ngModel]="item[subProp.key]"
+                                (ngModelChange)="onArrayItemChange(prop.key, $index, subProp.key, $event)"
+                              >
+                                @for (opt of subProp.options; track opt.value) {
+                                  <option [value]="opt.value">{{ opt.label }}</option>
+                                }
+                              </select>
+                            </div>
+                          }
+                          @case ('number') {
+                            <div class="field">
+                              <label>{{ subProp.label }}</label>
+                              <input
+                                type="number"
+                                [ngModel]="item[subProp.key]"
+                                (ngModelChange)="onArrayItemChange(prop.key, $index, subProp.key, +$event)"
+                                [min]="subProp.min ?? 0"
+                                [max]="subProp.max ?? 9999"
+                              />
+                            </div>
+                          }
+                          @case ('boolean') {
+                            <div class="field field-boolean">
+                              <label class="toggle-label">
+                                <input
+                                  type="checkbox"
+                                  [ngModel]="item[subProp.key]"
+                                  (ngModelChange)="onArrayItemChange(prop.key, $index, subProp.key, $event)"
+                                />
+                                <span>{{ subProp.label }}</span>
+                              </label>
+                            </div>
+                          }
+                          @default {
+                            <div class="field">
+                              <label>{{ subProp.label }}</label>
+                              <input
+                                type="text"
+                                [ngModel]="item[subProp.key]"
+                                (ngModelChange)="onArrayItemChange(prop.key, $index, subProp.key, $event)"
+                              />
+                            </div>
+                          }
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        }
+      </section>
+
+      @if (layout(); as currentLayout) {
+        <section class="panel-section layout-section">
+          <div class="section-title">Layout</div>
+          <div class="layout-grid">
+            @for (prop of layoutProps; track prop.key) {
+              @if (prop.type === 'number') {
+                <div class="field compact-field">
+                  <label>{{ prop.label }}</label>
+                  <input
+                    type="number"
+                    [attr.data-testid]="'layout-input-' + prop.key"
+                    [ngModel]="currentLayout[prop.key] ?? 0"
+                    (ngModelChange)="onLayoutPropChange(prop, $event)"
+                    [min]="prop.min ?? 0"
+                    [max]="prop.max ?? 9999"
+                  />
+                </div>
+              } @else {
+                <div class="field field-boolean compact-toggle">
+                  <label class="toggle-label">
+                    <input
+                      type="checkbox"
+                      [ngModel]="currentLayout[prop.key] ?? false"
+                      (ngModelChange)="onLayoutPropChange(prop, $event)"
+                    />
+                    <span>{{ prop.label }}</span>
+                  </label>
+                </div>
+              }
+            }
+          </div>
+          <div class="layout-actions">
+            <button type="button" class="action-btn" (click)="toggleHidden.emit()">
+              {{ currentLayout.hidden ? 'Show Block' : 'Hide Block' }}
+            </button>
+            <button type="button" class="action-btn" (click)="toggleLocked.emit()">
+              {{ currentLayout.locked ? 'Unlock Block' : 'Lock Block' }}
+            </button>
+            <button type="button" class="action-btn" (click)="bringForward.emit()">Bring Forward</button>
+            <button type="button" class="action-btn" (click)="sendBackward.emit()">Send Backward</button>
+            <button type="button" class="action-btn" (click)="duplicate.emit()">Duplicate Block</button>
+            <button type="button" class="action-btn action-btn-danger" (click)="remove.emit()">Delete Block</button>
+          </div>
+        </section>
+      }
+    </div>
+  </div>
+} @else {
+  <div class="panel empty-panel">
+    <div class="empty-message">
+      <div class="empty-icon">&#9698;</div>
+      <p>Select a block to edit its properties</p>
+    </div>
+  </div>
+}

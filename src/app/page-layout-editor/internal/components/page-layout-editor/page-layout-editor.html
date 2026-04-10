@@ -1,0 +1,199 @@
+<div class="editor-page">
+  <app-editor-menu
+    title="Page Layout Editor"
+    [accent]="accentColor"
+    [pageSize]="page"
+    hint="Drag blocks on the page surface. Use the panel to edit content and layout separately."
+    [canUndo]="canUndo()"
+    [canRedo]="canRedo()"
+    (back)="back()"
+    (printPreview)="onPrintPreview()"
+    (undo)="undo()"
+    (redo)="redo()"
+  />
+
+  <div class="editor-layout">
+    <aside class="sidebar" [style.width.px]="sidebarWidthPx">
+      <h2>Blocks</h2>
+      @if (!isReadonly && isFeatureEnabled('addBlocks')) {
+        <div class="add-blocks">
+          @for (option of blockTypeOptions; track option.blockType) {
+            <button type="button" class="add-block-btn" (click)="addBlock(option.blockType)">
+              @if (option.icon) {
+                <span>{{ option.icon }}</span>
+              }
+              Add {{ option.label }}
+            </button>
+          }
+        </div>
+      }
+      <div class="block-list">
+        @for (block of allBlocks; track block.id) {
+          <div class="block-list-item" [class.selected]="isSelected(block.id)">
+            <button class="block-list-main" (click)="selectBlock(block.id)">
+              <span class="block-list-title">
+                @if (block.schema.icon) {
+                  <span>{{ block.schema.icon }}</span>
+                }
+                {{ block.schema.typeLabel }}
+              </span>
+              @if (getLayout(block.id); as layout) {
+                <span class="block-list-meta">
+                  x {{ layout.x }}, y {{ layout.y }}, w {{ layout.w }}, h {{ layout.h }}
+                  @if (layout.hidden) { · hidden }
+                  @if (layout.locked) { · locked }
+                </span>
+              }
+            </button>
+            @if (!isReadonly && getLayout(block.id); as layout) {
+              <div class="block-controls">
+                <button
+                  type="button"
+                  class="control-btn"
+                  (click)="toggleHidden(block.id); $event.stopPropagation()"
+                  [attr.aria-pressed]="layout.hidden ?? false"
+                >{{ layout.hidden ? 'Show' : 'Hide' }}</button>
+                <button
+                  type="button"
+                  class="control-btn"
+                  (click)="toggleLocked(block.id); $event.stopPropagation()"
+                  [attr.aria-pressed]="layout.locked ?? false"
+                >{{ layout.locked ? 'Unlock' : 'Lock' }}</button>
+                <button type="button" class="control-btn" (click)="bringForward(block.id); $event.stopPropagation()">Front</button>
+                <button type="button" class="control-btn" (click)="sendBackward(block.id); $event.stopPropagation()">Back</button>
+                @if (isFeatureEnabled('duplicateBlocks')) {
+                  <button type="button" class="control-btn" (click)="duplicateBlock(block.id); $event.stopPropagation()">Duplicate</button>
+                }
+                @if (isFeatureEnabled('deleteBlocks')) {
+                  <button type="button" class="control-btn control-btn-danger" (click)="deleteBlock(block.id); $event.stopPropagation()">Delete</button>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </aside>
+
+    <main class="canvas" tabindex="0" (click)="closePanel()" (keydown)="onCanvasKeydown($event)">
+      <h2>Page Layout</h2>
+      @if (collisionMessage(); as message) {
+        <div class="collision-feedback" role="status" data-testid="collision-feedback">{{ message }}</div>
+      }
+      <div
+        class="page-surface"
+        data-testid="page-surface"
+        [style.width.px]="page.widthPx"
+        [style.min-height.px]="page.heightPx"
+        [style.--grid-cols]="page.gridCols"
+        [style.--row-height.px]="page.rowHeightPx"
+        [style.--grid-gap.px]="page.gapPx"
+      >
+        @for (item of positionedBlocks; track trackByBlockId($index, item)) {
+          <div
+            class="layout-block"
+            [attr.data-block-id]="item.block.id"
+            [class.selected]="isSelected(item.block.id)"
+            [class.locked]="item.layout.locked"
+            [class.resizing]="isResizing(item.block.id)"
+            [class.invalid]="collisionBlockId() === item.block.id || dragCollisionBlockId() === item.block.id || resizeCollisionBlockId() === item.block.id"
+            cdkDrag
+            cdkDragBoundary=".page-surface"
+            [cdkDragDisabled]="isReadonly || !isFeatureEnabled('drag') || (item.layout.locked ?? false) || isResizing(item.block.id)"
+            (cdkDragMoved)="onDragMoved(item.block.id, $event)"
+            (cdkDragEnded)="onDragEnded(item.block.id, $event)"
+            (click)="selectBlock(item.block.id); $event.stopPropagation()"
+            [style.left.px]="getLeftPx(item.layout)"
+            [style.top.px]="getTopPx(item.layout)"
+            [style.width.px]="getWidthPx(item.layout)"
+            [style.height.px]="getHeightPx(item.layout)"
+            [style.z-index]="item.layout.zIndex ?? 0"
+          >
+            <div class="block-header drag-handle" cdkDragHandle [attr.data-testid]="'drag-handle-' + item.block.id">
+              <div class="block-label">{{ item.block.schema.typeLabel }}</div>
+              <div class="drag-indicator" aria-hidden="true">
+                <span>&#9776;</span>
+                <span>Drag</span>
+              </div>
+            </div>
+            @if (!isReadonly && isFeatureEnabled('resize')) {
+              <button
+                class="resize-handle"
+                type="button"
+                [attr.data-testid]="'resize-handle-' + item.block.id"
+                [disabled]="item.layout.locked ?? false"
+                (pointerdown)="startResize(item.block.id, $event)"
+                (click)="$event.stopPropagation()"
+                aria-label="Resize block"
+              ></button>
+            }
+            @switch (getRenderKind(item.block)) {
+              @case ('image') {
+                <div
+                  class="content image-content"
+                  [style.background]="item.block.data['backgroundColor'] || '#e8f5e9'"
+                >
+                  <img
+                    [src]="item.block.data['src']"
+                    [alt]="item.block.data['alt']"
+                    [style.object-fit]="item.block.data['objectFit'] || 'contain'"
+                    [style.border-radius.px]="item.block.data['borderRadius'] || 4"
+                  />
+                </div>
+              }
+              @case ('text') {
+                <div
+                  class="content text-content"
+                  [style.background]="item.block.data['backgroundColor']"
+                  [style.font-size.px]="item.block.data['fontSize']"
+                  [style.font-weight]="item.block.data['fontWeight']"
+                  [style.text-align]="item.block.data['textAlign']"
+                >
+                  <p>{{ item.block.data['content'] }}</p>
+                </div>
+              }
+              @case ('questions') {
+                <div class="content questions-content">
+                  <div
+                    class="questions-list"
+                    [style.grid-template-columns]="'repeat(' + (item.block.data['columns'] || 2) + ', 1fr)'"
+                  >
+                    @for (q of getQuestions(item.block); track $index) {
+                      <div class="q-row">
+                        <span class="q-num">{{ $index + 1 }}.</span>
+                        <span>{{ q['question'] }}</span>
+                        @if (item.block.data['showAnswers'] !== false) {
+                          <span class="q-answer">= {{ q['answer'] }}</span>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+              @default {
+                <div class="content">
+                  <pre>{{ item.block.data | json }}</pre>
+                </div>
+              }
+            }
+          </div>
+        }
+      </div>
+    </main>
+
+    <aside class="props-sidebar open" [style.width.px]="propertyPanelWidthPx">
+      <app-property-panel
+        [block]="selectedBlock()"
+        [layout]="selectedLayout()"
+        (blockChange)="onBlockChange($event)"
+        (layoutChange)="onLayoutChange($event)"
+        (toggleHidden)="toggleHidden(selectedBlock()!.id)"
+        (toggleLocked)="toggleLocked(selectedBlock()!.id)"
+        (bringForward)="bringForward(selectedBlock()!.id)"
+        (sendBackward)="sendBackward(selectedBlock()!.id)"
+        (duplicate)="duplicateBlock(selectedBlock()!.id)"
+        (remove)="deleteBlock(selectedBlock()!.id)"
+        (closed)="closePanel()"
+      />
+    </aside>
+  </div>
+</div>

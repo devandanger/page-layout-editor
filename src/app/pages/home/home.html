@@ -1,0 +1,232 @@
+<div class="home-container">
+  <header class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">Consumer Shell Demo</div>
+      <h1>Use This App As A Host Example, Not As The Library Itself</h1>
+      <p class="subtitle">
+        The reusable piece is the editor experience: menu, block list, page canvas, property panel,
+        document model, and interaction rules. This page should act like the host application that
+        feeds the editor its inputs and handles persistence around it.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-large" (click)="openEditor('editor')">Open Editor Demo</button>
+        <button class="btn btn-secondary" (click)="resetData()">Reset Example Document</button>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="card-label">Recommended Boundary</div>
+      <div class="split-grid">
+        <div class="split-panel">
+          <h3>Library Owns</h3>
+          <ul>
+            @for (item of libraryOwns; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </div>
+        <div class="split-panel split-panel-host">
+          <h3>Host App Owns</h3>
+          <ul>
+            @for (item of hostOwns; track item) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="api-section">
+    <div class="section-heading">
+      <h2>Proposed Library API</h2>
+      <p>This page demonstrates the inputs a consuming Angular application would supply.</p>
+    </div>
+
+    <div class="api-grid">
+      <div class="api-card">
+        <h3>Inputs</h3>
+        <div class="api-list">
+          @for (item of apiInputs; track item.name) {
+            <div class="api-row">
+              <div class="api-name">&#64;Input() {{ item.name }}</div>
+              <div class="api-type">{{ item.type }}</div>
+              <p>{{ item.description }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="api-card">
+        <h3>Outputs</h3>
+        <div class="api-list">
+          @for (item of apiOutputs; track item.name) {
+            <div class="api-row">
+              <div class="api-name">&#64;Output() {{ item.name }}</div>
+              <div class="api-type">{{ item.type }}</div>
+              <p>{{ item.description }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="example-section">
+    <div class="section-heading">
+      <h2>Example Consumption</h2>
+      <p>The host app should pass the editor a document, a block registry, and optional theme/config.</p>
+    </div>
+
+    <div class="code-grid">
+      <article class="code-card">
+        <div class="code-title">Component Template</div>
+        <pre><code>{{ consumerExample }}</code></pre>
+      </article>
+
+      <article class="code-card">
+        <div class="code-title">Document Input</div>
+        <pre><code>{{ documentExample }}</code></pre>
+      </article>
+
+      <article class="code-card">
+        <div class="code-title">Registry Input</div>
+        <pre><code>{{ registryExample }}</code></pre>
+      </article>
+
+      <article class="code-card">
+        <div class="code-title">Custom Render Kind</div>
+        <pre><code>{{ renderKindExample }}</code></pre>
+      </article>
+
+      <article class="code-card">
+        <div class="code-title">Theme Input</div>
+        <pre><code>{{ themeExample }}</code></pre>
+      </article>
+
+      <article class="code-card">
+        <div class="code-title">Config Input</div>
+        <pre><code>{{ configExample }}</code></pre>
+      </article>
+    </div>
+  </section>
+
+  <section class="workspace-section">
+    <div class="section-heading">
+      <h2>Example Host Workspace</h2>
+      <p>
+        Treat the controls below as host-app concerns. They are useful for demos, diagnostics, and
+        API exploration, but they should not define the library boundary.
+      </p>
+    </div>
+
+    <div class="workspace-grid">
+      <section class="panel-card preview-section">
+        <div class="panel-header">
+          <h3>Current Example Document</h3>
+          <span class="meta-pill">{{ data().blocks.length }} blocks</span>
+        </div>
+        <div class="preview-cards">
+          @for (block of data().blocks; track block.id) {
+            <div class="card">
+              <h3>
+                @if (block.schema.icon) {
+                  <span>{{ block.schema.icon }}</span>
+                }
+                {{ block.schema.typeLabel }}
+              </h3>
+              <div class="block-meta">
+                <span class="badge">{{ block.blockType }}</span>
+                <span class="prop-count">{{ block.schema.properties.length }} properties</span>
+              </div>
+              @if (getLayoutSummary(block.id); as layoutSummary) {
+                <div class="layout-meta">{{ layoutSummary }}</div>
+              }
+              <div class="block-data-preview">
+                @for (prop of block.schema.properties; track prop.key) {
+                  <div class="data-row">
+                    <span class="data-key">{{ prop.label }}:</span>
+                    <span class="data-val">{{ getPreviewValue(block.data[prop.key]) }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="panel-card size-section">
+        <div class="panel-header">
+          <h3>Page Settings</h3>
+          <span class="meta-pill">{{ data().page.widthPx }} × {{ data().page.heightPx }}</span>
+        </div>
+
+        <p class="size-intro">
+          In a real host app these values could come from a document preset, API payload, or product config.
+        </p>
+
+        <div class="size-controls">
+          <div class="size-presets">
+            <label>Presets</label>
+            <div class="preset-chips">
+              @for (preset of presets; track preset.label) {
+                <button
+                  class="chip"
+                  [class.active]="preset.width === data().page.widthPx && preset.height === data().page.heightPx"
+                  (click)="applyPreset(preset)"
+                >{{ preset.label }}</button>
+              }
+            </div>
+          </div>
+
+          <div class="size-inputs">
+            <div class="size-field">
+              <label>Width (px)</label>
+              <input
+                type="number"
+                [ngModel]="data().page.widthPx"
+                (ngModelChange)="onWidthChange($event)"
+                min="200"
+                max="3840"
+              />
+            </div>
+            <span class="size-separator">&times;</span>
+            <div class="size-field">
+              <label>Height (px)</label>
+              <input
+                type="number"
+                [ngModel]="data().page.heightPx"
+                (ngModelChange)="onHeightChange($event)"
+                min="200"
+                max="3840"
+              />
+            </div>
+            <div class="size-preview-box">
+              <div
+                class="size-preview-rect"
+                [style.aspect-ratio]="data().page.widthPx + ' / ' + data().page.heightPx"
+              ></div>
+              <span class="size-dims">{{ data().page.widthPx }} &times; {{ data().page.heightPx }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel-card json-section">
+        <div class="panel-header">
+          <h3>Example JSON Input</h3>
+          <span class="meta-pill">Host-managed</span>
+        </div>
+        @if (jsonError()) {
+          <div class="json-error">{{ jsonError() }}</div>
+        }
+        <textarea
+          class="json-editor"
+          [ngModel]="jsonText()"
+          (ngModelChange)="onJsonChange($event)"
+          spellcheck="false"
+        ></textarea>
+      </section>
+    </div>
+  </section>
+</div>

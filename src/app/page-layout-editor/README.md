@@ -1,0 +1,49 @@
+# Page Layout Editor Boundary
+
+This folder is the internal library-shaped boundary for the reusable editor.
+
+Host-app code should import editor components, types, and helpers from this folder instead of reaching into the implementation folders directly. The implementation lives under `internal/`, while the public surface remains in the API entrypoints so it can later move into an Angular library or internal npm package.
+
+- `document-api.ts` exposes document types, registry contracts, config/theme/action types, and document hydration/serialization/validation helpers.
+- `editor-api.ts` exposes the standalone editor UI component.
+- `public-api.ts` re-exports both surfaces for a future package entrypoint.
+
+`internal/` contains implementation details. `EditorMenu`, `PropertyPanel`, ID/layout helpers, and low-level layout utilities are intentionally not part of the public surface right now.
+
+Within this app, prefer the narrowest sub-entrypoint (`document-api.ts` for the home/demo page, `editor-api.ts` for the editor route) to preserve lazy-loading boundaries.
+
+The host app should own routing, persistence, auth, and product-specific behavior. The editor boundary should own the page document model, block registry contract, layout rules, editor UI, and interaction behavior.
+
+## Custom Block Rendering
+
+The registry can map custom block types onto built-in renderers with `renderKind`.
+
+Supported `renderKind` values:
+
+- `image`
+- `text`
+- `questions`
+- `json`
+
+Example:
+
+```ts
+const worksheetBlockRegistry: BlockRegistry = {
+  heroImage: {
+    type: 'heroImage',
+    label: 'Hero Image',
+    schema: HERO_IMAGE_SCHEMA,
+    renderKind: 'image',
+    createDefaultContent: () => ({
+      src: '',
+      alt: '',
+      objectFit: 'cover',
+      borderRadius: 8,
+      backgroundColor: '#e8f5e9',
+    }),
+    createDefaultLayout: () => ({ w: 12, h: 6 }),
+  },
+};
+```
+
+If `renderKind` is omitted, the editor falls back to the block type name for built-in block types, then to the JSON renderer for unknown render kinds.

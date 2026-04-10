@@ -1,0 +1,66 @@
+<div class="menu-bar" [style.background]="accent()" (clickOutside)="closeMenus()">
+  <nav class="menus">
+    <div class="menu-item" [class.open]="fileMenuOpen">
+      <button class="menu-trigger" (click)="toggleFileMenu()">File</button>
+      @if (fileMenuOpen) {
+        <div class="dropdown" (click)="$event.stopPropagation()">
+          <button class="dropdown-item" (click)="onUndo()" [disabled]="!canUndo()">
+            <span class="shortcut-icon">&#8630;</span>
+            Undo
+          </button>
+          <button class="dropdown-item" (click)="onRedo()" [disabled]="!canRedo()">
+            <span class="shortcut-icon">&#8631;</span>
+            Redo
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" (click)="onBack()">
+            <span class="shortcut-icon">&#8592;</span>
+            Back to Home
+          </button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" (click)="onPrintPreview()">
+            <span class="shortcut-icon">&#9113;</span>
+            Print / PDF Preview
+          </button>
+        </div>
+      }
+    </div>
+  </nav>
+
+  <h1 class="title">{{ title() }}</h1>
+
+  <span class="size-badge">{{ pageSize().widthPx }} &times; {{ pageSize().heightPx }}px</span>
+
+  @if (hint()) {
+    <span class="hint">{{ hint() }}</span>
+  }
+
+  <div class="top-actions">
+    <button
+      type="button"
+      class="fab-action"
+      (click)="onUndo()"
+      [disabled]="!canUndo()"
+      aria-label="Undo"
+      title="Undo"
+      data-testid="undo-fab"
+    >
+      &#8630;
+    </button>
+    <button
+      type="button"
+      class="fab-action"
+      (click)="onRedo()"
+      [disabled]="!canRedo()"
+      aria-label="Redo"
+      title="Redo"
+      data-testid="redo-fab"
+    >
+      &#8631;
+    </button>
+  </div>
+</div>
+
+@if (fileMenuOpen) {
+  <div class="menu-backdrop" (click)="closeMenus()"></div>
+}
