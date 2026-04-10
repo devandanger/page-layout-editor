@@ -1,63 +1,67 @@
-# PageLayoutProto
+# page-layout-editor
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+Reusable Angular page layout editor with block-based content, grid layout controls, document JSON serialization, and a library-shaped API for host app integration.
 
-## Development server
+This repository currently includes both:
+
+- an example/demo Angular host app
+- the reusable editor boundary under `src/app/page-layout-editor`
+
+The reusable boundary exposes the editor through `document-api.ts`, `editor-api.ts`, and `public-api.ts`. Implementation details live under `src/app/page-layout-editor/internal`.
+
+## Development Server
 
 To start a local development server, run:
 
 ```bash
-ng serve
+npm start
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
 ## Document Model
 
 The editor uses a persisted JSON document with separate `blocks`, `layout`, and `page` sections. See [BLOCK_SCHEME_LAYOUT_BLOCK_DESIGN.md](./BLOCK_SCHEME_LAYOUT_BLOCK_DESIGN.md) for the high-level format, runtime semantics, and the stepwise enhancement plan for block schemas and layout blocks.
 
-## Running unit tests
+## Library Boundary
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Host-app code should consume the editor from:
 
-```bash
-ng test
+```ts
+import { PageLayoutEditor } from './page-layout-editor/editor-api';
+import { hydrateDocument, serializeDocument } from './page-layout-editor/document-api';
 ```
 
-## Running end-to-end tests
+See [src/app/page-layout-editor/README.md](./src/app/page-layout-editor/README.md) for the internal library-shaped API boundary, public exports, and custom block rendering guidance.
 
-For end-to-end (e2e) testing, run:
+## Building
+
+To build the project, run:
 
 ```bash
-ng e2e
+npm run build
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Running Unit Tests
 
-## Additional Resources
+To execute unit tests with the [Vitest](https://vitest.dev/) test runner, run:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```bash
+npm test
+```
+
+## Boundary Check
+
+To verify host code does not import editor internals directly, run:
+
+```bash
+npm run test:boundary
+```
+
+## Browser Smoke Tests
+
+To run the Playwright smoke suite, run:
+
+```bash
+npm run test:e2e
+```
