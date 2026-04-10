@@ -2,23 +2,23 @@ import { Injectable, signal } from '@angular/core';
 import {
   DEFAULT_PAGE_SETTINGS,
   ContentBlock,
-  createDefaultDocument,
   LayoutBlock,
   PageDocument,
   PageSettings,
   PageSize,
 } from 'page-layout-editor';
+import { createDemoDocument } from '../demo-block-registry';
 
 @Injectable({ providedIn: 'root' })
 export class ContentService {
-  readonly data = signal<PageDocument>(structuredClone(createDefaultDocument()));
+  readonly data = signal<PageDocument>(structuredClone(createDemoDocument()));
   readonly pageSize = signal<PageSize>({
     widthPx: DEFAULT_PAGE_SETTINGS.widthPx,
     heightPx: DEFAULT_PAGE_SETTINGS.heightPx,
   });
 
   reset(): void {
-    const document = structuredClone(createDefaultDocument());
+    const document = structuredClone(createDemoDocument());
     this.setDocument(document);
   }
 

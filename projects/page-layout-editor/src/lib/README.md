@@ -17,12 +17,13 @@ The host app should own routing, persistence, auth, and product-specific behavio
 ## Custom Block Rendering
 
 The registry can map custom block types onto built-in renderers with `renderKind`.
+For example, a host app can define its own worksheet-specific `questions` schema and map it to the `list-grid` renderer without that block type being part of the default library registry.
 
 Supported `renderKind` values:
 
 - `image`
 - `text`
-- `questions`
+- `list-grid`
 - `json`
 
 Example:

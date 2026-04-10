@@ -28,7 +28,7 @@ function createDocument(): PageDocument {
         fontSize: 14,
         fontWeight: 'normal',
         textAlign: 'left',
-        backgroundColor: '#fff3e0',
+        backgroundColor: '#ffffff',
       },
     },
   ];

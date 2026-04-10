@@ -535,7 +535,7 @@ export class PageLayoutEditor implements OnDestroy {
         margin: 0;
         line-height: 1.6;
       }
-      .print-questions-grid {
+      .print-list-grid {
         display: grid;
         gap: 8px;
       }
@@ -638,14 +638,14 @@ export class PageLayoutEditor implements OnDestroy {
       case 'text':
         return `<div class="print-block" style="${style};background:${this.escapeStyleColor(
           d['backgroundColor'],
-          '#fff3e0'
+          '#ffffff'
         )};padding:16px;font-size:${this.escapeNumber(d['fontSize'], 14)}px;font-weight:${this.escapeCssKeyword(
           d['fontWeight'],
           'normal'
         )};text-align:${this.escapeCssKeyword(d['textAlign'], 'left')}"><p>${this.escapeHtml(
           d['content']
         )}</p></div>`;
-      case 'questions': {
+      case 'list-grid': {
         const questions = Array.isArray(d['questions']) ? d['questions'] : [];
         const showAnswers = d['showAnswers'] !== false;
         const columns = Math.max(1, this.escapeNumber(d['columns'], 2));
@@ -658,7 +658,7 @@ export class PageLayoutEditor implements OnDestroy {
             }</div>`;
           })
           .join('');
-        return `<div class="print-block" style="${style};background:#e3f2fd;padding:16px"><div class="print-questions-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div></div>`;
+        return `<div class="print-block" style="${style};background:#e3f2fd;padding:16px"><div class="print-list-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div></div>`;
       }
       default:
         return `<div class="print-block" style="${style};padding:16px"><pre>${this.escapeHtml(

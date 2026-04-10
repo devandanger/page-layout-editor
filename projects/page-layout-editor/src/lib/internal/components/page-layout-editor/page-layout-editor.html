@@ -151,10 +151,10 @@
                   <p>{{ item.block.data['content'] }}</p>
                 </div>
               }
-              @case ('questions') {
-                <div class="content questions-content">
+              @case ('list-grid') {
+                <div class="content list-grid-content">
                   <div
-                    class="questions-list"
+                    class="list-grid"
                     [style.grid-template-columns]="'repeat(' + (item.block.data['columns'] || 2) + ', 1fr)'"
                   >
                     @for (q of getQuestions(item.block); track $index) {

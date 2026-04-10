@@ -7,10 +7,10 @@ import {
   PageDocument,
   SerializedContentBlock,
   SerializedPageDocument,
-  DEFAULT_BLOCK_REGISTRY,
   hydrateDocument,
   serializeDocument,
 } from 'page-layout-editor';
+import { DEMO_BLOCK_REGISTRY } from '../../demo-block-registry';
 
 interface SizePreset {
   label: string;
@@ -44,7 +44,7 @@ export class Home {
   jsonError = signal('');
   data = this.contentService.data;
   pageSize = this.contentService.pageSize;
-  registry = DEFAULT_BLOCK_REGISTRY;
+  registry = DEMO_BLOCK_REGISTRY;
   theme: EditorTheme = {
     accentColor: '#1b5e20',
     sidebarWidthPx: 280,
@@ -53,14 +53,14 @@ export class Home {
   libraryOwns = [
     'editor menu, page surface, left sidebar, and property panel',
     'layout rules, collisions, drag/resize behavior, keyboard movement, and undo/redo',
-    'document model types and block registry behavior',
+    'document model types, block registry contract, and render-kind behavior',
     'block lifecycle actions and editor-level feedback states',
   ];
   hostOwns = [
     'routing and application shell',
     'loading, saving, autosave, and backend integration',
     'auth, permissions, and product-specific validation',
-    'supplying the document, registry, and optional theming inputs',
+    'supplying the document, registry, custom block definitions, and optional theming inputs',
   ];
   apiInputs: ApiInput[] = [
     { name: 'document', type: 'PageDocument', description: 'Current editor document passed in by the consuming app.' },
@@ -110,11 +110,19 @@ export class Home {
   },
   text: {
     type: 'text',
-    label: 'Instructions',
+    label: 'Text',
     schema: TEXT_SCHEMA,
     renderKind: 'text',
     createDefaultContent: () => ({ content: '' }),
     createDefaultLayout: () => ({ w: 12, h: 4 }),
+  },
+  questions: {
+    type: 'questions',
+    label: 'Questions',
+    schema: QUESTIONS_SCHEMA,
+    renderKind: 'list-grid',
+    createDefaultContent: () => ({ columns: 2, showAnswers: true, questions: [] }),
+    createDefaultLayout: () => ({ w: 12, h: 8 }),
   }
 };`;
   renderKindExample = `const worksheetBlockRegistry: BlockRegistry = {

@@ -32,7 +32,7 @@ export interface PropDef {
 }
 
 export interface BlockSchema {
-  typeLabel: string;     // e.g. "Image", "Instructions", "Questions"
+  typeLabel: string;     // e.g. "Image", "Text", "Questions"
   icon?: string;         // optional icon character
   properties: PropDef[];
 }
@@ -97,7 +97,7 @@ export interface DocumentValidationResult {
   errors: string[];
 }
 
-export type BlockRenderKind = 'image' | 'text' | 'questions' | 'json';
+export type BlockRenderKind = 'image' | 'text' | 'list-grid' | 'json';
 
 export interface BlockDefinition {
   type: string;

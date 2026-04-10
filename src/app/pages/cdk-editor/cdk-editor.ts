@@ -1,11 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../services/content.service';
-import {
-  DEFAULT_BLOCK_REGISTRY,
-  PageDocument,
-  PageLayoutEditor,
-} from 'page-layout-editor';
+import { PageDocument, PageLayoutEditor } from 'page-layout-editor';
+import { DEMO_BLOCK_REGISTRY } from '../../demo-block-registry';
 
 @Component({
   selector: 'app-cdk-editor',
@@ -17,7 +14,7 @@ export class CdkEditor {
   private contentService = inject(ContentService);
 
   document = this.contentService.data;
-  registry = DEFAULT_BLOCK_REGISTRY;
+  registry = DEMO_BLOCK_REGISTRY;
 
   onDocumentChange(document: PageDocument): void {
     this.contentService.update(document);

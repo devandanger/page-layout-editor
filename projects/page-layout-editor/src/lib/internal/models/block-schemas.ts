@@ -39,10 +39,10 @@ export const IMAGE_SCHEMA: BlockSchema = {
 };
 
 export const TEXT_SCHEMA: BlockSchema = {
-  typeLabel: 'Instructions',
+  typeLabel: 'Text',
   icon: '\u{1F4DD}',
   properties: [
-    { key: 'content', label: 'Content', type: 'textarea', placeholder: 'Enter instructions...' },
+    { key: 'content', label: 'Content', type: 'textarea', placeholder: 'Enter text...' },
     { key: 'fontSize', label: 'Font Size (px)', type: 'number', min: 8, max: 72 },
     { key: 'fontWeight', label: 'Font Weight', type: 'select', options: [
       { label: 'Normal', value: 'normal' },
@@ -56,31 +56,6 @@ export const TEXT_SCHEMA: BlockSchema = {
       { label: 'Justify', value: 'justify' },
     ]},
     { key: 'backgroundColor', label: 'Background Color', type: 'color' },
-  ],
-};
-
-export const QUESTIONS_SCHEMA: BlockSchema = {
-  typeLabel: 'Questions',
-  icon: '\u{2753}',
-  properties: [
-    { key: 'columns', label: 'Grid Columns', type: 'number', min: 1, max: 6 },
-    { key: 'showAnswers', label: 'Show Answers', type: 'boolean' },
-    {
-      key: 'questions',
-      label: 'Questions',
-      type: 'array',
-      itemSchema: [
-        { key: 'question', label: 'Question', type: 'text', placeholder: 'e.g. 345 + 278' },
-        { key: 'answer', label: 'Answer', type: 'text', placeholder: 'e.g. 623' },
-        { key: 'questionType', label: 'Type', type: 'select', options: [
-          { label: 'Math Top-Down', value: 'math-top-down' },
-          { label: 'Math Left-Right', value: 'math-left-right' },
-          { label: 'Multiple Choice', value: 'multiple-choice' },
-          { label: 'Fill in Blank', value: 'fill-in-blank' },
-        ]},
-      ],
-      itemDefault: { question: '', answer: '', questionType: 'math-top-down' },
-    },
   ],
 };
 
@@ -114,31 +89,7 @@ export function createDefaultTextBlock(): ContentBlock {
       fontSize: 14,
       fontWeight: 'normal',
       textAlign: 'left',
-      backgroundColor: '#fff3e0',
-    },
-  };
-}
-
-export function createDefaultQuestionsBlock(): ContentBlock {
-  return {
-    id: createId('block'),
-    blockType: 'questions',
-    schema: QUESTIONS_SCHEMA,
-    data: {
-      columns: 2,
-      showAnswers: true,
-      questions: [
-        { question: '345 + 278', answer: '623', questionType: 'math-top-down' },
-        { question: '512 - 187', answer: '325', questionType: 'math-top-down' },
-        { question: '64 \u00d7 7', answer: '448', questionType: 'math-top-down' },
-        { question: '936 \u00f7 4', answer: '234', questionType: 'math-top-down' },
-        { question: '1,024 + 879', answer: '1,903', questionType: 'math-top-down' },
-        { question: '800 - 356', answer: '444', questionType: 'math-top-down' },
-        { question: '123 \u00d7 5', answer: '615', questionType: 'math-top-down' },
-        { question: '756 \u00f7 3', answer: '252', questionType: 'math-top-down' },
-        { question: '2,450 + 1,375', answer: '3,825', questionType: 'math-top-down' },
-        { question: '999 - 467', answer: '532', questionType: 'math-top-down' },
-      ],
+      backgroundColor: '#ffffff',
     },
   };
 }
@@ -147,7 +98,6 @@ export function createDefaultQuestionsBlock(): ContentBlock {
 export const SCHEMA_REGISTRY: Record<string, BlockSchema> = {
   image: IMAGE_SCHEMA,
   text: TEXT_SCHEMA,
-  questions: QUESTIONS_SCHEMA,
 };
 
 export const DEFAULT_BLOCK_REGISTRY: BlockRegistry = {
@@ -168,15 +118,6 @@ export const DEFAULT_BLOCK_REGISTRY: BlockRegistry = {
     renderKind: 'text',
     createDefaultContent: () => structuredClone(createDefaultTextBlock().data),
     createDefaultLayout: () => ({ w: 12, h: 4 }),
-  },
-  questions: {
-    type: 'questions',
-    label: QUESTIONS_SCHEMA.typeLabel,
-    icon: QUESTIONS_SCHEMA.icon,
-    schema: QUESTIONS_SCHEMA,
-    renderKind: 'questions',
-    createDefaultContent: () => structuredClone(createDefaultQuestionsBlock().data),
-    createDefaultLayout: () => ({ w: 12, h: 8 }),
   },
 };
 
@@ -213,8 +154,6 @@ export function getDefaultBlockHeight(blockType: string): number {
       return 6;
     case 'text':
       return 4;
-    case 'questions':
-      return 8;
     default:
       return 4;
   }
@@ -262,7 +201,6 @@ export function createDefaultDocument(): PageDocument {
   const blocks = [
     createDefaultImageBlock(),
     createDefaultTextBlock(),
-    createDefaultQuestionsBlock(),
   ];
 
   return {
