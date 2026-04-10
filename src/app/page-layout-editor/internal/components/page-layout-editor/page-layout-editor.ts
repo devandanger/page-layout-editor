@@ -1,7 +1,7 @@
 import { Component, effect, inject, input, output, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDrag, CdkDragEnd, CdkDragHandle, CdkDragMove } from '@angular/cdk/drag-drop';
-import { PrintService } from '../../../../services/print.service';
+import { DefaultPrintAdapter } from '../../services/default-print-adapter';
 import {
   BlockRegistry,
   BlockRenderKind,
@@ -55,7 +55,7 @@ const DEFAULT_EDITOR_CONFIG: ResolvedPageLayoutEditorConfig = {
   styleUrl: './page-layout-editor.scss',
 })
 export class PageLayoutEditor implements OnDestroy {
-  private printService = inject(PrintService);
+  private printAdapter = inject(DefaultPrintAdapter);
 
   documentInput = input<PageDocument | null>(null, { alias: 'document' });
   registry = input<BlockRegistry>(DEFAULT_BLOCK_REGISTRY);
@@ -554,7 +554,7 @@ export class PageLayoutEditor implements OnDestroy {
         margin-left: 4px;
       }
     `;
-    this.printService.openPrintPreview(`<div class="print-page">${html}</div>`, css, this.pageSize);
+    this.printAdapter.openPrintPreview(`<div class="print-page">${html}</div>`, css, this.pageSize);
     this.action.emit({ type: 'print-preview', blockId: this.selectedBlockId() });
   }
 

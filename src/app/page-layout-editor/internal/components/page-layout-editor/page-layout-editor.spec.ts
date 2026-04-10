@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { vi, describe, beforeEach, afterEach, expect, it } from 'vitest';
 import { PageLayoutEditor } from './page-layout-editor';
-import { PrintService } from '../../../../services/print.service';
 import { BlockRegistry, ContentBlock, LayoutBlock, PageDocument } from '../../models/content-block.model';
 import { IMAGE_SCHEMA, TEXT_SCHEMA } from '../../models/block-schemas';
+import { DefaultPrintAdapter } from '../../services/default-print-adapter';
 
 function createDocument(): PageDocument {
   const blocks: ContentBlock[] = [
@@ -83,7 +83,7 @@ describe('PageLayoutEditor', () => {
       imports: [PageLayoutEditor],
       providers: [
         {
-          provide: PrintService,
+          provide: DefaultPrintAdapter,
           useValue: {
             openPrintPreview: vi.fn(),
           },

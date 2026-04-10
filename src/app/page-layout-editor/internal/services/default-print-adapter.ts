@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { PageSize } from '../page-layout-editor/document-api';
+import { PageSize } from '../models/content-block.model';
 
 @Injectable({ providedIn: 'root' })
-export class PrintService {
+export class DefaultPrintAdapter {
   /**
    * Opens a print-preview window with the given HTML + CSS content,
    * sized to the page dimensions.

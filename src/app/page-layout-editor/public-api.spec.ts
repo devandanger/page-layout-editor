@@ -11,7 +11,6 @@ import {
   PageLayoutEditor,
   serializeDocument,
 } from './public-api';
-import { PrintService } from '../services/print.service';
 
 describe('page-layout-editor public API', () => {
   it('supports document hydration and serialization from the public entrypoint', () => {
@@ -38,14 +37,6 @@ describe('page-layout-editor public API', () => {
   it('allows a host app to instantiate the editor through the public entrypoint', async () => {
     await TestBed.configureTestingModule({
       imports: [PageLayoutEditor],
-      providers: [
-        {
-          provide: PrintService,
-          useValue: {
-            openPrintPreview: vi.fn(),
-          },
-        },
-      ],
     }).compileComponents();
 
     const document: PageDocument = hydrateDocument(
