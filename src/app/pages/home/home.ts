@@ -10,7 +10,7 @@ import {
   DEFAULT_BLOCK_REGISTRY,
   hydrateDocument,
   serializeDocument,
-} from '../../page-layout-editor/document-api';
+} from 'page-layout-editor';
 
 interface SizePreset {
   label: string;

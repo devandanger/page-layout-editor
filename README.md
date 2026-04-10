@@ -5,9 +5,9 @@ Reusable Angular page layout editor with block-based content, grid layout contro
 This repository currently includes both:
 
 - an example/demo Angular host app
-- the reusable editor boundary under `src/app/page-layout-editor`
+- the reusable Angular library under `projects/page-layout-editor`
 
-The reusable boundary exposes the editor through `document-api.ts`, `editor-api.ts`, and `public-api.ts`. Implementation details live under `src/app/page-layout-editor/internal`.
+The library exposes the editor through `projects/page-layout-editor/src/public-api.ts`. Internal implementation details live under `projects/page-layout-editor/src/lib/internal`.
 
 ## Development Server
 
@@ -28,11 +28,10 @@ The editor uses a persisted JSON document with separate `blocks`, `layout`, and 
 Host-app code should consume the editor from:
 
 ```ts
-import { PageLayoutEditor } from './page-layout-editor/editor-api';
-import { hydrateDocument, serializeDocument } from './page-layout-editor/document-api';
+import { PageLayoutEditor, hydrateDocument, serializeDocument } from 'page-layout-editor';
 ```
 
-See [src/app/page-layout-editor/README.md](./src/app/page-layout-editor/README.md) for the internal library-shaped API boundary, public exports, and custom block rendering guidance.
+See [projects/page-layout-editor/src/lib/README.md](./projects/page-layout-editor/src/lib/README.md) for the internal library boundary, public exports, and custom block rendering guidance.
 
 ## Building
 
@@ -40,6 +39,12 @@ To build the project, run:
 
 ```bash
 npm run build
+```
+
+To build the reusable library itself, run:
+
+```bash
+npx ng build page-layout-editor
 ```
 
 ## Running Unit Tests

@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:lib": "ng build page-layout-editor",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:boundary": "node scripts/check-editor-boundary.mjs",
@@ -29,6 +30,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@playwright/test": "^1.59.1",
     "jsdom": "^29.0.2",
+    "ng-packagr": "^21.2.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
     "vitest": "^4.1.4"

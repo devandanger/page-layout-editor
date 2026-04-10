@@ -25,6 +25,12 @@
   "references": [
     {
       "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./projects/page-layout-editor/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/page-layout-editor/tsconfig.spec.json"
     }
   ]
 }

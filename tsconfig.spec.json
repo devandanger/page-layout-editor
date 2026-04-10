@@ -4,6 +4,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    "paths": {
+      "page-layout-editor": ["./projects/page-layout-editor/src/public-api.ts"]
+    },
     "types": [
       "vitest/globals"
     ]

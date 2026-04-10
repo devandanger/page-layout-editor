@@ -52,9 +52,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ]
+            "styles": ["src/styles.scss"]
           },
           "configurations": {
             "production": {
@@ -98,6 +96,32 @@
             "tsConfig": "tsconfig.spec.json",
             "runner": "vitest",
             "watch": false
+          }
+        }
+      }
+    },
+    "page-layout-editor": {
+      "projectType": "library",
+      "root": "projects/page-layout-editor",
+      "sourceRoot": "projects/page-layout-editor/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/page-layout-editor/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/page-layout-editor/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/page-layout-editor/tsconfig.spec.json"
           }
         }
       }
