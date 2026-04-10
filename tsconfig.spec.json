@@ -5,7 +5,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "paths": {
-      "@devandanger/page-layout-editor": ["./projects/page-layout-editor/src/public-api.ts"]
+      "page-layout-editor": ["./projects/page-layout-editor/src/public-api.ts"]
     },
     "types": [
       "vitest/globals"

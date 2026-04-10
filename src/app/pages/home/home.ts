@@ -10,7 +10,7 @@ import {
   DEFAULT_BLOCK_REGISTRY,
   hydrateDocument,
   serializeDocument,
-} from '@devandanger/page-layout-editor';
+} from 'page-layout-editor';
 
 interface SizePreset {
   label: string;

@@ -5,7 +5,7 @@ import {
   DEFAULT_BLOCK_REGISTRY,
   PageDocument,
   PageLayoutEditor,
-} from '@devandanger/page-layout-editor';
+} from 'page-layout-editor';
 
 @Component({
   selector: 'app-cdk-editor',

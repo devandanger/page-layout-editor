@@ -28,7 +28,7 @@ The editor uses a persisted JSON document with separate `blocks`, `layout`, and 
 Host-app code should consume the editor from:
 
 ```ts
-import { PageLayoutEditor, hydrateDocument, serializeDocument } from '@devandanger/page-layout-editor';
+import { PageLayoutEditor, hydrateDocument, serializeDocument } from 'page-layout-editor';
 ```
 
 See [projects/page-layout-editor/src/lib/README.md](./projects/page-layout-editor/src/lib/README.md) for the internal library boundary, public exports, and custom block rendering guidance.

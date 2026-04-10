@@ -9,7 +9,7 @@ projects/page-layout-editor/
 The demo host app under `src/app` now consumes that library through the workspace package import:
 
 ```ts
-import { PageLayoutEditor, hydrateDocument, serializeDocument } from '@devandanger/page-layout-editor';
+import { PageLayoutEditor, hydrateDocument, serializeDocument } from 'page-layout-editor';
 ```
 
 ## Current Library Shape
@@ -73,25 +73,18 @@ npm run test:e2e
 
 - Styling is component-scoped and may need more theme tokens for broader host customization.
 - `renderKind` supports reuse of built-in renderers, but not arbitrary custom Angular renderer components yet.
-- The demo host app currently uses a source-path alias for local workspace consumption. Published consumers will resolve the package from GitHub Packages instead.
+- The demo host app currently uses a source-path alias for local workspace consumption. Published consumers will resolve the package from npm instead.
 
-## GitHub Packages Consumption
+## npm Consumption
 
 The library package is configured as:
 
 ```text
-@devandanger/page-layout-editor
-```
-
-To consume it from another app, that app will need an `.npmrc` similar to:
-
-```text
-@devandanger:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+page-layout-editor
 ```
 
 Then install it with:
 
 ```bash
-npm install @devandanger/page-layout-editor
+npm install page-layout-editor
 ```
