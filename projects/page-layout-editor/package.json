@@ -1,6 +1,6 @@
 {
   "name": "page-layout-editor",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Reusable Angular page layout editor with block-based content, grid layout controls, document JSON serialization, and a library-shaped API for host app integration.",
   "homepage": "https://github.com/devandanger/page-layout-editor#readme",
   "bugs": {

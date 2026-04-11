@@ -72,8 +72,14 @@ npm run test:e2e
 ## Known Limitations
 
 - Styling is component-scoped and may need more theme tokens for broader host customization.
-- `renderKind` supports reuse of built-in renderers, but not arbitrary custom Angular renderer components yet.
 - The demo host app currently uses a source-path alias for local workspace consumption. Published consumers will resolve the package from npm instead.
+
+## Consumer Docs
+
+Published-consumer guidance now lives in:
+
+- `projects/page-layout-editor/README.md`
+- `CONSUMING_PAGE_LAYOUT_EDITOR.md`
 
 ## npm Consumption
 

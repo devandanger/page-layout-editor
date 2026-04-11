@@ -32,6 +32,20 @@ import { PageLayoutEditor, hydrateDocument, serializeDocument } from 'page-layou
 ```
 
 See [projects/page-layout-editor/src/lib/README.md](./projects/page-layout-editor/src/lib/README.md) for the internal library boundary, public exports, and custom block rendering guidance.
+See [projects/page-layout-editor/README.md](./projects/page-layout-editor/README.md) for the npm-facing consumer setup.
+See [CONSUMING_PAGE_LAYOUT_EDITOR.md](./CONSUMING_PAGE_LAYOUT_EDITOR.md) for a step-by-step integration guide in another Angular app.
+
+## Consuming From Another App
+
+The practical integration flow is:
+
+1. `npm install page-layout-editor`
+2. define a host-owned `BlockRegistry`
+3. optionally define host-owned `BlockRendererRegistry` entries for custom visuals and print output
+4. persist documents with `serializeDocument(...)`
+5. hydrate saved JSON with `hydrateDocument(savedJson, registry)`
+
+The package currently targets Angular 21 peers.
 
 ## Building
 
