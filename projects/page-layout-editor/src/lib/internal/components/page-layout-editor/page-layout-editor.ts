@@ -694,7 +694,7 @@ export class PageLayoutEditor implements OnDestroy {
             }</div>`;
           })
           .join('');
-        return { html: `<div class="print-block" style="${style};background:#e3f2fd;padding:16px"><div class="print-list-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div></div>` };
+        return { html: `<div class="print-block" style="${style};background:${this.escapeStyleColor(d['backgroundColor'], '#ffffff')};padding:16px"><div class="print-list-grid" style="grid-template-columns:repeat(${columns},1fr)">${items}</div></div>` };
       }
       default:
         return { html: `<div class="print-block" style="${style};padding:16px"><pre>${this.escapeHtml(
